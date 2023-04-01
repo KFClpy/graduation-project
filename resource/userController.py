@@ -4,7 +4,7 @@ from flask_restful import Resource, reqparse
 from base.baseview import BaseView
 from base.status_code import Codes
 from mysqldb.models import User
-from service.userService import login_user, register_user, logout, getuser, updatepassword
+from service.userService import login_user, register_user, logout, getuser, updatepassword, updateuser
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='用户名不能为空', required=True)
@@ -74,6 +74,20 @@ class ChangePassword(Resource, BaseView):
             print(e)
             return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
 
+
+class ChangeUserInfo(Resource,BaseView):
+    @jwt_required()
+    def post(self):
+        userinfo=userParser.parse_args()
+        current_user=get_jwt_identity()
+        newuser=User(tusername=current_user,avatar=userinfo['avatar'],email=userinfo['email'],
+                     phone=userinfo['phone'],gender=userinfo['gender'],nickname=userinfo['nickname'])
+        try:
+            updateuser(newuser)
+            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
+        except Exception as e:
+            print(e)
+            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
 
 
 class UserLogoutAccess(Resource, BaseView):
