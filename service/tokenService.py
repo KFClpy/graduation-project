@@ -12,6 +12,5 @@ def add_revoked_token(revokedtoken):
         db.session.add(revokedtoken)
         db.session.commit()
     except Exception as e:
-        print(e)
         db.session.rollback()
         raise e

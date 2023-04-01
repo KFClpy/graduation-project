@@ -5,6 +5,7 @@ from base.baseview import BaseView
 from base.status_code import Codes
 from mysqldb.models import User
 from service.userService import login_user, register_user, logout, getuser, updatepassword, updateuser
+from utils.logger import base_log
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='用户名不能为空', required=True)
@@ -32,7 +33,7 @@ class UserRegistration(Resource, BaseView):
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
 
         except Exception as ex:
-            print(ex)
+            base_log.info(ex)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
@@ -49,7 +50,7 @@ class UserLogin(Resource, BaseView):
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
 
         except Exception as ex:
-            print(ex)
+            base_log.info(ex)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
@@ -71,7 +72,7 @@ class ChangePassword(Resource, BaseView):
             updatepassword(pwdinfo['newpassword'],pwdinfo['oldpassword'],current_user)
             return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
         except Exception as e:
-            print(e)
+            base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
 
 
@@ -86,7 +87,7 @@ class ChangeUserInfo(Resource,BaseView):
             updateuser(newuser)
             return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
         except Exception as e:
-            print(e)
+            base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
 
 
@@ -98,7 +99,7 @@ class UserLogoutAccess(Resource, BaseView):
             logout(jti)
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
-            print(e)
+            base_log.info(e)
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
 
 
@@ -110,7 +111,7 @@ class UserLogoutRefresh(Resource, BaseView):
             logout(jti)
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
-            print(e)
+            base_log.log(e)
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
 
 
