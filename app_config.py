@@ -16,3 +16,8 @@ class Config:
     REDIS_PWD = 'lty542217'
     JWT_SECRET_KEY = 'jwt-secret-string'
     JWT_BLOCKLIST_TOKEN_CHECKS = ['access', 'refresh']
+    UPLOAD_PATH = os.path.join(os.path.dirname(__file__), "Files")
+
+
+class Path:
+    CSV_PATH=os.path.join(Config.UPLOAD_PATH,"csv")
