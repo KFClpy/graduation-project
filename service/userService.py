@@ -18,7 +18,8 @@ def login_user(user):
     refresh_token = create_refresh_token(user.tusername)
     return {
         'access_token': access_token,
-        'refresh_token': refresh_token
+        'refresh_token': refresh_token,
+        'identity': users[0].identity
     }
 
 
@@ -30,7 +31,6 @@ def register_user(user):
         db.session.add(user)
         db.session.commit()
     except Exception as ex:
-        print(ex)
         db.session.rollback()
         raise ex
     return True
@@ -40,3 +40,36 @@ def logout(jti):
     revoked_token = RevokedTokenModel(jti=jti)
     add_revoked_token(revoked_token)
     return True
+
+
+def getuser(username):
+    users = db.session.query(User).filter(User.tusername == username).all()
+    if len(users) == 0:
+        raise NoUser("该用户不存在")
+    return users[0]
+
+
+def updateuser(newuser):
+    try:
+        user = getuser(newuser.tusername)
+        user.avatar = newuser.avatar
+        user.email = newuser.email
+        user.gender = newuser.gender
+        user.nickname = newuser.nickname
+        user.phone = newuser.phone
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+
+def updatepassword(newpassword, oldpassword, username):
+    user = getuser(username)
+    if not user.check_password(oldpassword):
+        raise WrongPassword("密码错误")
+    try:
+        user.set_password(newpassword)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e

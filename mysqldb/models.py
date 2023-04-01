@@ -8,7 +8,6 @@ class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
     tusername = db.Column(db.String(20), unique=True, nullable=False)
     tpassword = db.Column(db.String(150), unique=True, nullable=False)
-    salt = db.Column(db.String(36))
     gender = db.Column(db.Integer)
     phone = db.Column(db.String(20))
     email = db.Column(db.String(50))

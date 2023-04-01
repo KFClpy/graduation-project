@@ -4,18 +4,27 @@ from flask_restful import Resource, reqparse
 from base.baseview import BaseView
 from base.status_code import Codes
 from mysqldb.models import User
-from service.userService import login_user, register_user, logout
+from service.userService import login_user, register_user, logout, getuser, updatepassword
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='用户名不能为空', required=True)
 parser.add_argument('password', help='密码不能为空', required=True)
-
+userParser = reqparse.RequestParser()
+userParser.add_argument('gender', help='性别不能为空', required=True)
+userParser.add_argument('phone', help='电话不能为空', required=True)
+userParser.add_argument('email', help='邮件地址不能为空', required=True)
+userParser.add_argument('nickname', help='昵称不能为空', required=True)
+userParser.add_argument('avatar')
+passwordParser = reqparse.RequestParser()
+passwordParser.add_argument('oldpassword',help='旧密码不能为空',required=True)
+passwordParser.add_argument('newpassword',help='新密码不能为空',required=True)
 
 class UserRegistration(Resource, BaseView):
     def post(self):
         data = parser.parse_args()
         new_user = User(
-            tusername=data['username']
+            tusername=data['username'],
+            identity=0
         )
         new_user.set_password(data['password'])
         try:
@@ -51,6 +60,20 @@ class TokenRefresh(Resource, BaseView):
         access_token = create_access_token(identity=current_user)
         data = {'access_token': access_token}
         return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.FAILE.desc, data=data)
+
+
+class ChangePassword(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        pwdinfo = passwordParser.parse_args()
+        current_user = get_jwt_identity()
+        try:
+            updatepassword(pwdinfo['newpassword'],pwdinfo['oldpassword'],current_user)
+            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
+        except Exception as e:
+            print(e)
+            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+
 
 
 class UserLogoutAccess(Resource, BaseView):
