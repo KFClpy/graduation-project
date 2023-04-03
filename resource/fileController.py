@@ -5,7 +5,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 import pandas as pd
 from base.baseview import BaseView
-from app_config import  Path
+from app_config import Path
 from utils.filefilter import is_csv
 
 file_parser = reqparse.RequestParser()
@@ -20,6 +20,6 @@ class Upload(Resource, BaseView):
         if file and is_csv(file.filename):
             file_path = os.path.join(path, secure_filename(file.filename))
             file.save(file_path)
-            df=pd.read_csv(file_path)
-            return df.__len__(), 201
+            df = pd.read_csv(file_path)
+            return df.to_dict(), 201
         return False
