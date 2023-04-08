@@ -7,9 +7,11 @@ from errors import errors
 from mysqldb.exts import db
 from resource import userController, fileController
 from service import tokenService
+from flask_cors import CORS
 
 app = create_app()
-
+cors=CORS()
+cors.init_app(app, supports_credentials=True)
 api = Api(app, errors=errors)
 api.add_resource(userController.UserRegistration, '/registration')
 api.add_resource(userController.UserLogin, '/login')
