@@ -17,9 +17,8 @@ def login_user(user):
     access_token = create_access_token(user.tusername)
     refresh_token = create_refresh_token(user.tusername)
     return {
-        'access_token': access_token,
-        'refresh_token': refresh_token,
-        'identity': users[0].identity
+        'token': access_token,
+        'refreshToken': refresh_token
     }
 
 

@@ -17,7 +17,7 @@ class User(db.Model):
     modified_user = db.Column(db.String(20))
     modified_time = db.Column(db.DateTime)
     nickname = db.Column(db.String(50))
-    identity = db.Column(db.Integer)
+    role = db.Column(db.String(50))
 
     def set_password(self, password):
         self.tpassword = generate_password_hash(password)

@@ -17,8 +17,9 @@ userParser.add_argument('email', help='邮件地址不能为空', required=True)
 userParser.add_argument('nickname', help='昵称不能为空', required=True)
 userParser.add_argument('avatar')
 passwordParser = reqparse.RequestParser()
-passwordParser.add_argument('oldpassword',help='旧密码不能为空',required=True)
-passwordParser.add_argument('newpassword',help='新密码不能为空',required=True)
+passwordParser.add_argument('oldpassword', help='旧密码不能为空', required=True)
+passwordParser.add_argument('newpassword', help='新密码不能为空', required=True)
+
 
 class UserRegistration(Resource, BaseView):
     def post(self):
@@ -69,26 +70,26 @@ class ChangePassword(Resource, BaseView):
         pwdinfo = passwordParser.parse_args()
         current_user = get_jwt_identity()
         try:
-            updatepassword(pwdinfo['newpassword'],pwdinfo['oldpassword'],current_user)
-            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
+            updatepassword(pwdinfo['newpassword'], pwdinfo['oldpassword'], current_user)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
-class ChangeUserInfo(Resource,BaseView):
+class ChangeUserInfo(Resource, BaseView):
     @jwt_required()
     def post(self):
-        userinfo=userParser.parse_args()
-        current_user=get_jwt_identity()
-        newuser=User(tusername=current_user,avatar=userinfo['avatar'],email=userinfo['email'],
-                     phone=userinfo['phone'],gender=userinfo['gender'],nickname=userinfo['nickname'])
+        userinfo = userParser.parse_args()
+        current_user = get_jwt_identity()
+        newuser = User(tusername=current_user, avatar=userinfo['avatar'], email=userinfo['email'],
+                       phone=userinfo['phone'], gender=userinfo['gender'], nickname=userinfo['nickname'])
         try:
             updateuser(newuser)
-            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=None)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
 class UserLogoutAccess(Resource, BaseView):
@@ -112,7 +113,24 @@ class UserLogoutRefresh(Resource, BaseView):
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
             base_log.log(e)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
+
+class GetUserInfo(Resource, BaseView):
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()
+        try:
+            user = getuser(current_user)
+            data = {
+                'userName': user.tusername,
+                'userId': user.uid,
+                'userRole': user.role
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
 class Test(Resource):

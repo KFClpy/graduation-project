@@ -6,7 +6,7 @@ from base.baseenum import EnumBase
 @unique
 class Codes(EnumBase):
     # 20000～30000 预留系统状态
-    SUCCESS = (20000, '操作成功')
+    SUCCESS = (200, '操作成功')
     FAILE = (20001, '操作失败')
     LOGOUT = (20002, '退出登陆成功')
     TOKEN_INVALID = (20003, 'token失效')
