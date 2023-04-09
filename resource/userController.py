@@ -28,14 +28,18 @@ class UserRegistration(Resource, BaseView):
             tusername=data['username'],
             role='user'
         )
+        backdata = {
+            'username': "notgood"
+        }
         new_user.set_password(data['password'])
         try:
             register_user(new_user)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            backdata['username'] = new_user.tusername
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=backdata)
 
         except Exception as ex:
             base_log.info(ex)
-            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=backdata)
 
 
 class UserLogin(Resource, BaseView):
