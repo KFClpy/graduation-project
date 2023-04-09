@@ -26,7 +26,7 @@ class UserRegistration(Resource, BaseView):
         data = parser.parse_args()
         new_user = User(
             tusername=data['username'],
-            identity=0
+            role='user'
         )
         new_user.set_password(data['password'])
         try:
