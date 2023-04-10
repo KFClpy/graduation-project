@@ -4,6 +4,8 @@ from flask_restful import Resource, reqparse
 from base.baseview import BaseView
 from base.status_code import Codes
 from mysqldb.models import User
+from routes import routes
+from routes.home import home_route
 from service.userService import login_user, register_user, logout, getuser, updatepassword, updateuser
 from utils.logger import base_log
 
@@ -136,6 +138,21 @@ class GetUserInfo(Resource, BaseView):
             base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
+
+class GetUserRoutes(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        username = get_jwt_identity()
+        try:
+            user = getuser(username)
+            data={
+                "routes":routes[user.role],
+                "home":home_route
+            }
+            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
 
 class Test(Resource):
     @jwt_required()
