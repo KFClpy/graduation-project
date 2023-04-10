@@ -64,7 +64,7 @@ class TokenRefresh(Resource, BaseView):
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity=current_user)
-        data = {'access_token': access_token}
+        data = {'token': access_token}
         return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.FAILE.desc, data=data)
 
 
