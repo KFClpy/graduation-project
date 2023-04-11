@@ -1,4 +1,6 @@
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, get_jwt
+from time import time
+
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, get_jwt, decode_token
 from flask_restful import Resource, reqparse
 
 from base.baseview import BaseView
@@ -21,6 +23,8 @@ userParser.add_argument('avatar')
 passwordParser = reqparse.RequestParser()
 passwordParser.add_argument('oldpassword', help='旧密码不能为空', required=True)
 passwordParser.add_argument('newpassword', help='新密码不能为空', required=True)
+tokenParser = reqparse.RequestParser()
+tokenParser.add_argument('refreshToken', help='token不能为空', required=True)
 
 
 class UserRegistration(Resource, BaseView):
@@ -62,12 +66,16 @@ class UserLogin(Resource, BaseView):
 
 
 class TokenRefresh(Resource, BaseView):
-    @jwt_required(refresh=True)
     def post(self):
-        current_user = get_jwt_identity()
-        access_token = create_access_token(identity=current_user)
-        data = {'token': access_token}
-        return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.FAILE.desc, data=data)
+        refresh_token = tokenParser.parse_args()['refreshToken']
+        current_user = decode_token(refresh_token)['sub']
+        expire_time=decode_token(refresh_token)['exp']
+        if int(time())<=expire_time:
+            access_token = create_access_token(identity=current_user)
+            data = {'token': access_token, 'refresh_token': refresh_token}
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
+        else:
+            return self.formattingData(code=Codes.FAILE.code, msg="登录已过期", data=None)
 
 
 class ChangePassword(Resource, BaseView):
@@ -107,7 +115,7 @@ class UserLogoutAccess(Resource, BaseView):
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
 
 
 class UserLogoutRefresh(Resource, BaseView):
@@ -145,14 +153,15 @@ class GetUserRoutes(Resource, BaseView):
         username = get_jwt_identity()
         try:
             user = getuser(username)
-            data={
-                "routes":routes[user.role],
-                "home":home_route
+            data = {
+                "routes": routes[user.role],
+                "home": home_route
             }
-            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=data)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
 
 class Test(Resource):
     @jwt_required()
