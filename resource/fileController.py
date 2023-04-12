@@ -33,6 +33,7 @@ class UploadFile(Resource, BaseView):
                 file_path = os.path.join(path, secure_filename(data_file.filename))
                 data_file.save(file_path)
                 file_to_data(file_path, user_name, data_name)
+                os.remove(file_path)
                 return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc,
                                            data=None)
             except Exception as ex:

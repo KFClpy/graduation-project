@@ -34,3 +34,26 @@ def file_to_data(filepath, username, dataname):
     except Exception as e:
         db.session.rollback()
         raise e
+
+
+def get_data_from_db(username, dataname):
+    try:
+        rows = db.session.query(DataTableModel).filter(DataTableModel.username == username,
+                                                       DataTableModel.dataname == dataname).all()
+    except Exception as e:
+        raise e
+    try:
+        mappings = db.session.query(DataMappingModel).filter(DataMappingModel.username == username,
+                                                             DataMappingModel.dataname == dataname).all()
+    except Exception as e:
+        raise e
+    db_dict = {}
+    attributes = ['attribute%s' % i for i in range(1, 16)]
+    for mapping in mappings:
+        db_dict[mapping.th_name] = []
+    for row in rows:
+        for mapping in mappings:
+            db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
+    del db_dict["username"]
+    del db_dict["dataname"]
+    return db_dict
