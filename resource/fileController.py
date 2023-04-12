@@ -13,7 +13,7 @@ from app_config import Path
 from base.status_code import Codes
 from service.fileService import file_to_data
 from utils.filefilter import is_csv
-
+from utils.logger import base_log
 
 data_file_parser = reqparse.RequestParser()
 data_file_parser.add_argument('data_name', help='数据集名称不能为空', required=True,location='form')
@@ -29,8 +29,13 @@ class UploadFile(Resource, BaseView):
         data_name = data['data_name']
         data_file = data['data_file']
         if data_file and is_csv(data_file.filename):
-            file_path = os.path.join(path, secure_filename(data_file.filename))
-            data_file.save(file_path)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc,
-                                       data=file_to_data(file_path, user_name, data_name))
+            try:
+                file_path = os.path.join(path, secure_filename(data_file.filename))
+                data_file.save(file_path)
+                file_to_data(file_path, user_name, data_name)
+                return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc,
+                                           data=None)
+            except Exception as ex:
+                base_log.info(ex)
+                return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
         return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)

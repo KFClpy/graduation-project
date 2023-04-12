@@ -40,8 +40,8 @@ class RevokedTokenModel(db.Model):
 class DataTableModel(db.Model):
     __tablename__ = 'data'
     tid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    dataname = db.Column(db.String(50), nullable=False, unique=True)
+    username = db.Column(db.String(50), db.ForeignKey("mapping.username"), nullable=False, unique=True)
+    dataname = db.Column(db.String(50), db.ForeignKey("mapping.dataname"), nullable=False, unique=True)
     attribute1 = db.Column(db.String(255))
     attribute2 = db.Column(db.String(255))
     attribute3 = db.Column(db.String(255))
@@ -62,9 +62,9 @@ class DataTableModel(db.Model):
         return "<dataTable %r %r>" % self.username % self.dataname
 
 
-class DataMapping(db.Model):
+class DataMappingModel(db.Model):
     __tablename__ = 'mapping'
-    username = db.Column(db.String(50), db.ForeignKey('data.username'), primary_key=True)
-    dataname = db.Column(db.String(50), db.ForeignKey('data.dataname'), primary_key=True)
+    username = db.Column(db.String(50), primary_key=True)
+    dataname = db.Column(db.String(50), primary_key=True)
     th_id = db.Column(db.Integer, primary_key=True)
     th_name = db.Column(db.String(100))
