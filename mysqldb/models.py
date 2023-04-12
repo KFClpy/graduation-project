@@ -1,5 +1,4 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from mysqldb.exts import db
 
 
@@ -36,3 +35,36 @@ class RevokedTokenModel(db.Model):
 
     def __repr__(self):
         return "<User %r>" % self.jti
+
+
+class DataTableModel(db.Model):
+    __tablename__ = 'data'
+    tid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    dataname = db.Column(db.String(50), nullable=False, unique=True)
+    attribute1 = db.Column(db.String(255))
+    attribute2 = db.Column(db.String(255))
+    attribute3 = db.Column(db.String(255))
+    attribute4 = db.Column(db.String(255))
+    attribute5 = db.Column(db.String(255))
+    attribute6 = db.Column(db.String(255))
+    attribute7 = db.Column(db.String(255))
+    attribute8 = db.Column(db.String(255))
+    attribute9 = db.Column(db.String(255))
+    attribute10 = db.Column(db.String(255))
+    attribute11 = db.Column(db.String(255))
+    attribute12 = db.Column(db.String(255))
+    attribute13 = db.Column(db.String(255))
+    attribute14 = db.Column(db.String(255))
+    attribute15 = db.Column(db.String(255))
+
+    def __repr__(self):
+        return "<dataTable %r %r>" % self.username % self.dataname
+
+
+class DataMapping(db.Model):
+    __tablename__ = 'mapping'
+    username = db.Column(db.String(50), db.ForeignKey('data.username'), primary_key=True)
+    dataname = db.Column(db.String(50), db.ForeignKey('data.dataname'), primary_key=True)
+    th_id = db.Column(db.Integer, primary_key=True)
+    th_name = db.Column(db.String(100))

@@ -21,7 +21,7 @@ api.add_resource(userController.UserLogoutAccess, '/logoutAccess')
 api.add_resource(userController.UserLogoutRefresh, '/loginRefresh')
 api.add_resource(userController.ChangePassword, '/changepassword')
 api.add_resource(userController.ChangeUserInfo, '/changeuserinfo')
-api.add_resource(fileController.Upload, '/upload')
+api.add_resource(fileController.UploadFile, '/uploadFile')
 api.add_resource(userController.GetUserInfo, '/getUserInfo')
 api.add_resource(userController.GetUserRoutes,'/getUserRoutes')
 jwt = JWTManager(app)
@@ -37,4 +37,4 @@ def check_if_token_in_blacklist(jwt_header, decrypted_token):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
