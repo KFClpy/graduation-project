@@ -53,10 +53,14 @@ class JoinFile(Resource, BaseView):
         left_name = data['left_data_name']
         right_name = data['right_data_name']
         user_name=get_jwt_identity()
-        left=get_data_from_db(username=user_name,dataname=left_name)
-        right=get_data_from_db(username=user_name,dataname=right_name)
-        df_left=DataFrame(left)
-        df_right=DataFrame(right)
-        autofj = AutoFJ(verbose=True)
-        result = autofj.join(df_left, df_right, id_column="id").to_dict()
-        return result
+        try:
+            left=get_data_from_db(username=user_name,dataname=left_name)
+            right=get_data_from_db(username=user_name,dataname=right_name)
+            df_left=DataFrame(left)
+            df_right=DataFrame(right)
+            autofj = AutoFJ(verbose=True)
+            result = autofj.join(df_left, df_right, id_column="id").to_dict()
+            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=result)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
