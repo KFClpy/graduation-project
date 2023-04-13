@@ -2,6 +2,7 @@ import os
 
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse
+from pandas import DataFrame
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 import pandas as pd
@@ -11,13 +12,16 @@ from auto_fuzzy_join.datasets import load_data
 from base.baseview import BaseView
 from app_config import Path
 from base.status_code import Codes
-from service.fileService import file_to_data
+from service.fileService import file_to_data, get_data_from_db
 from utils.filefilter import is_csv
 from utils.logger import base_log
 
 data_file_parser = reqparse.RequestParser()
-data_file_parser.add_argument('data_name', help='数据集名称不能为空', required=True,location='form')
+data_file_parser.add_argument('data_name', help='数据集名称不能为空', required=True, location='form')
 data_file_parser.add_argument('data_file', type=FileStorage, location='files')
+join_parser = reqparse.RequestParser()
+join_parser.add_argument('left_data_name',help='左侧数据集名称不能为空',required=True)
+join_parser.add_argument('right_data_name',help='右侧数据集名称不能为空',required=True)
 
 
 class UploadFile(Resource, BaseView):
@@ -40,3 +44,19 @@ class UploadFile(Resource, BaseView):
                 base_log.info(ex)
                 return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
         return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
+
+class JoinFile(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        data = join_parser.parse_args()
+        left_name = data['left_data_name']
+        right_name = data['right_data_name']
+        user_name=get_jwt_identity()
+        left=get_data_from_db(username=user_name,dataname=left_name)
+        right=get_data_from_db(username=user_name,dataname=right_name)
+        df_left=DataFrame(left)
+        df_right=DataFrame(right)
+        autofj = AutoFJ(verbose=True)
+        result = autofj.join(df_left, df_right, id_column="id").to_dict()
+        return result
