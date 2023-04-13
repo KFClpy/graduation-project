@@ -42,7 +42,7 @@ class DataTableModel(db.Model):
     tid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), db.ForeignKey("mapping.username"), nullable=False, unique=True)
     dataname = db.Column(db.String(50), db.ForeignKey("mapping.dataname"), nullable=False, unique=True)
-    attribute1 = db.Column(db.String(255))
+    attribute1 = db.Column(db.Integer)
     attribute2 = db.Column(db.String(255))
     attribute3 = db.Column(db.String(255))
     attribute4 = db.Column(db.String(255))

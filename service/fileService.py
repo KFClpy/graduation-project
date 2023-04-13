@@ -6,8 +6,6 @@ from mysqldb.models import DataTableModel, DataMappingModel
 
 def file_to_data(filepath, username, dataname):
     df = pd.read_csv(filepath)
-    df['username'] = username
-    df['dataname'] = dataname
     attributes = ['attribute%s' % i for i in range(1, 16)]
     try:
         th_list = df.columns.tolist()
@@ -39,7 +37,8 @@ def file_to_data(filepath, username, dataname):
 def get_data_from_db(username, dataname):
     try:
         rows = db.session.query(DataTableModel).filter(DataTableModel.username == username,
-                                                       DataTableModel.dataname == dataname).all()
+                                                       DataTableModel.dataname == dataname).\
+            order_by(DataTableModel.attribute1).all()
     except Exception as e:
         raise e
     try:
@@ -54,6 +53,4 @@ def get_data_from_db(username, dataname):
     for row in rows:
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
-    del db_dict["username"]
-    del db_dict["dataname"]
     return db_dict
