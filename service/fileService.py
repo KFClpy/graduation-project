@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas import DataFrame
 
 from mysqldb.exts import db
 from mysqldb.models import DataTableModel, DataMappingModel
@@ -53,4 +54,4 @@ def get_data_from_db(username, dataname):
     for row in rows:
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
-    return db_dict
+    return DataFrame(db_dict)

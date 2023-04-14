@@ -1,8 +1,11 @@
+import io
 import os
 
+from flask import make_response, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse
 from pandas import DataFrame
+from pandas._typing import WriteBuffer
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 import pandas as pd
@@ -20,8 +23,11 @@ data_file_parser = reqparse.RequestParser()
 data_file_parser.add_argument('data_name', help='数据集名称不能为空', required=True, location='form')
 data_file_parser.add_argument('data_file', type=FileStorage, location='files')
 join_parser = reqparse.RequestParser()
-join_parser.add_argument('left_data_name',help='左侧数据集名称不能为空',required=True)
-join_parser.add_argument('right_data_name',help='右侧数据集名称不能为空',required=True)
+join_parser.add_argument('left_data_name', help='左侧数据集名称不能为空', required=True)
+join_parser.add_argument('right_data_name', help='右侧数据集名称不能为空', required=True)
+download_parser = reqparse.RequestParser()
+download_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
+download_parser.add_argument('user_name', help='用户名不能为空', required=True)
 
 
 class UploadFile(Resource, BaseView):
@@ -32,8 +38,8 @@ class UploadFile(Resource, BaseView):
         data = data_file_parser.parse_args()
         data_name = data['data_name']
         data_file = data['data_file']
-        back_data={
-            "username":user_name
+        back_data = {
+            "username": user_name
         }
         if data_file and is_csv(data_file.filename):
             try:
@@ -55,15 +61,26 @@ class JoinFile(Resource, BaseView):
         data = join_parser.parse_args()
         left_name = data['left_data_name']
         right_name = data['right_data_name']
-        user_name=get_jwt_identity()
+        user_name = get_jwt_identity()
         try:
-            left=get_data_from_db(username=user_name,dataname=left_name)
-            right=get_data_from_db(username=user_name,dataname=right_name)
-            df_left=DataFrame(left)
-            df_right=DataFrame(right)
+            left = get_data_from_db(username=user_name, dataname=left_name)
+            right = get_data_from_db(username=user_name, dataname=right_name)
+            df_left = DataFrame(left)
+            df_right = DataFrame(right)
             autofj = AutoFJ(verbose=True)
             result = autofj.join(df_left, df_right, id_column="id").to_dict()
-            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=result)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=result)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
+
+class DownloadFile(Resource, BaseView):
+    def post(self):
+        data = download_parser.parse_args()
+        username = data['user_name']
+        dataname = data['data_name']
+        df = get_data_from_db(username, dataname)
+        path = os.path.join(Path.CSV_PATH, secure_filename(dataname + ".csv"))
+        df.to_csv(path,index=False)
+        return send_file(path)
