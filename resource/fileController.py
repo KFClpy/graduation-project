@@ -32,6 +32,9 @@ class UploadFile(Resource, BaseView):
         data = data_file_parser.parse_args()
         data_name = data['data_name']
         data_file = data['data_file']
+        back_data={
+            "username":user_name
+        }
         if data_file and is_csv(data_file.filename):
             try:
                 file_path = os.path.join(path, secure_filename(data_file.filename))
@@ -39,7 +42,7 @@ class UploadFile(Resource, BaseView):
                 file_to_data(file_path, user_name, data_name)
                 os.remove(file_path)
                 return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc,
-                                           data=None)
+                                           data=back_data)
             except Exception as ex:
                 base_log.info(ex)
                 return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
