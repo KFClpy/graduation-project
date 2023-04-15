@@ -5,7 +5,7 @@ from flask_restful import Api
 from app import create_app
 from errors import errors
 from mysqldb.exts import db
-from resource import userController, fileController
+from resource import userController, fileController, dataController
 from service import tokenService
 from flask_cors import CORS
 
@@ -26,6 +26,7 @@ api.add_resource(userController.GetUserInfo, '/getUserInfo')
 api.add_resource(userController.GetUserRoutes,'/getUserRoutes')
 api.add_resource(fileController.JoinFile,"/jointest")
 api.add_resource(fileController.DownloadFile,"/file/download")
+api.add_resource(dataController.GetDataName,"/getDataName")
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
