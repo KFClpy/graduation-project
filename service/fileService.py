@@ -54,4 +54,5 @@ def get_data_from_db(username, dataname):
     for row in rows:
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
-    return DataFrame(db_dict)
+    return db_dict
+

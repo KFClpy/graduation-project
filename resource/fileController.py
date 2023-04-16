@@ -25,8 +25,8 @@ data_file_parser.add_argument('data_file', type=FileStorage, location='files')
 join_parser = reqparse.RequestParser()
 join_parser.add_argument('left_data_name', help='左侧数据集名称不能为空', required=True)
 join_parser.add_argument('right_data_name', help='右侧数据集名称不能为空', required=True)
-download_parser = reqparse.RequestParser()
-download_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
+data_name_parser = reqparse.RequestParser()
+data_name_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
 
 
 class UploadFile(Resource, BaseView):
@@ -77,10 +77,13 @@ class JoinFile(Resource, BaseView):
 class DownloadFile(Resource, BaseView):
     @jwt_required()
     def post(self):
-        data = download_parser.parse_args()
+        data = data_name_parser.parse_args()
         username = get_jwt_identity()
         dataname = data['data_name']
-        df = get_data_from_db(username, dataname)
+        df = DataFrame(get_data_from_db(username, dataname))
         path = os.path.join(Path.CSV_PATH, secure_filename(dataname + ".csv"))
         df.to_csv(path,index=False)
         return send_file(path)
+
+
+
