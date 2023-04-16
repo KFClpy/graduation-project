@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80026
 File Encoding         : 65001
 
-Date: 2023-04-12 20:42:26
+Date: 2023-04-16 22:32:45
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,7 +23,7 @@ CREATE TABLE `data` (
   `tid` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `dataname` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `attribute1` varchar(255) DEFAULT NULL,
+  `attribute1` int DEFAULT NULL,
   `attribute2` varchar(255) DEFAULT NULL,
   `attribute3` varchar(255) DEFAULT NULL,
   `attribute4` varchar(255) DEFAULT NULL,
@@ -39,11 +39,11 @@ CREATE TABLE `data` (
   `attribute14` varchar(255) DEFAULT NULL,
   `attribute15` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`tid`),
-  UNIQUE KEY `all_indice` (`username`,`dataname`,`attribute1`) USING BTREE,
-  KEY `key2` (`dataname`),
-  CONSTRAINT `key1` FOREIGN KEY (`username`) REFERENCES `mapping` (`username`),
-  CONSTRAINT `key2` FOREIGN KEY (`dataname`) REFERENCES `mapping` (`dataname`)
-) ENGINE=InnoDB AUTO_INCREMENT=10990 DEFAULT CHARSET=utf8mb3;
+  KEY `KEY1` (`username`),
+  KEY `KEY2` (`dataname`),
+  CONSTRAINT `KEY1` FOREIGN KEY (`username`) REFERENCES `mapping` (`username`),
+  CONSTRAINT `KEY2` FOREIGN KEY (`dataname`) REFERENCES `mapping` (`dataname`)
+) ENGINE=InnoDB AUTO_INCREMENT=96714 DEFAULT CHARSET=utf8mb3;
 
 -- ----------------------------
 -- Table structure for mapping
