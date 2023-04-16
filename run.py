@@ -19,12 +19,12 @@ api.add_resource(userController.TokenRefresh, '/updateToken')
 api.add_resource(userController.Test, '/test')
 api.add_resource(userController.UserLogoutAccess, '/logoutAccess')
 api.add_resource(userController.UserLogoutRefresh, '/loginRefresh')
-api.add_resource(userController.ChangePassword, '/changepassword')
-api.add_resource(userController.ChangeUserInfo, '/changeuserinfo')
+api.add_resource(userController.ChangePassword, '/changePassword')
+api.add_resource(userController.ChangeUserInfo, '/changeUserinfo')
 api.add_resource(fileController.UploadFile, '/uploadFile')
 api.add_resource(userController.GetUserInfo, '/getUserInfo')
 api.add_resource(userController.GetUserRoutes,'/getUserRoutes')
-api.add_resource(fileController.JoinFile,"/jointest")
+api.add_resource(fileController.JoinFile,"/autoFuzzyJoin")
 api.add_resource(fileController.DownloadFile,"/file/download")
 api.add_resource(dataController.GetDataName,"/getDataName")
 api.add_resource(dataController.GetDataTable,'/getDataTable')
@@ -41,4 +41,4 @@ def check_if_token_in_blacklist(jwt_header, decrypted_token):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

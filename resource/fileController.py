@@ -15,7 +15,7 @@ from auto_fuzzy_join.datasets import load_data
 from base.baseview import BaseView
 from app_config import Path
 from base.status_code import Codes
-from service.fileService import file_to_data, get_data_from_db
+from service.fileService import file_to_data, get_data_from_db, df_to_db
 from utils.filefilter import is_csv
 from utils.logger import base_log
 
@@ -25,6 +25,7 @@ data_file_parser.add_argument('data_file', type=FileStorage, location='files')
 join_parser = reqparse.RequestParser()
 join_parser.add_argument('left_data_name', help='左侧数据集名称不能为空', required=True)
 join_parser.add_argument('right_data_name', help='右侧数据集名称不能为空', required=True)
+join_parser.add_argument('data_name', help='生成数据集名称不能为空', required=True)
 data_name_parser = reqparse.RequestParser()
 data_name_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
 
@@ -60,6 +61,7 @@ class JoinFile(Resource, BaseView):
         data = join_parser.parse_args()
         left_name = data['left_data_name']
         right_name = data['right_data_name']
+        data_name = data['data_name']
         user_name = get_jwt_identity()
         try:
             left = get_data_from_db(username=user_name, dataname=left_name)
@@ -67,8 +69,9 @@ class JoinFile(Resource, BaseView):
             df_left = DataFrame(left)
             df_right = DataFrame(right)
             autofj = AutoFJ(verbose=True)
-            result = autofj.join(df_left, df_right, id_column="id").to_dict()
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=result)
+            result = autofj.join(df_left, df_right, id_column="id")
+            df_to_db(result, username=user_name, dataname=data_name)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
         except Exception as e:
             base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
@@ -82,8 +85,5 @@ class DownloadFile(Resource, BaseView):
         dataname = data['data_name']
         df = DataFrame(get_data_from_db(username, dataname))
         path = os.path.join(Path.CSV_PATH, secure_filename(dataname + ".csv"))
-        df.to_csv(path,index=False)
+        df.to_csv(path, index=False)
         return send_file(path)
-
-
-
