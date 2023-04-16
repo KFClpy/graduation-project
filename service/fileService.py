@@ -13,10 +13,10 @@ def file_to_data(filepath, username, dataname):
     attributes = ['attribute%s' % i for i in range(1, 16)]
     try:
         th_list = df.columns.tolist()
-        if len(th_list)>15:
+        if len(th_list) > 15:
             raise ColumnOutOfMax("列数超出限制")
-        if has_data_name(username,dataname):
-            raise  DataSetAlreadyExist("数据集已存在")
+        if has_data_name(username, dataname):
+            raise DataSetAlreadyExist("数据集已存在")
         for index, value in enumerate(th_list):
             mapping = DataMappingModel()
             mapping.username = username
@@ -42,14 +42,14 @@ def file_to_data(filepath, username, dataname):
         raise e
 
 
-def df_to_db(df,username, dataname):
+def df_to_db(df, username, dataname):
     attributes = ['attribute%s' % i for i in range(1, 16)]
     try:
         th_list = df.columns.tolist()
-        if len(th_list)>15:
+        if len(th_list) > 15:
             raise ColumnOutOfMax("列数超出限制")
-        if has_data_name(username,dataname):
-            raise  DataSetAlreadyExist("数据集已存在")
+        if has_data_name(username, dataname):
+            raise DataSetAlreadyExist("数据集已存在")
         for index, value in enumerate(th_list):
             mapping = DataMappingModel()
             mapping.username = username
@@ -78,7 +78,7 @@ def df_to_db(df,username, dataname):
 def get_data_from_db(username, dataname):
     try:
         rows = db.session.query(DataTableModel).filter(DataTableModel.username == username,
-                                                       DataTableModel.dataname == dataname).\
+                                                       DataTableModel.dataname == dataname). \
             order_by(DataTableModel.attribute1).all()
     except Exception as e:
         raise e
@@ -95,4 +95,3 @@ def get_data_from_db(username, dataname):
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
     return db_dict
-

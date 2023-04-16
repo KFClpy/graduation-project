@@ -15,7 +15,7 @@ def get_data_name(username):
 
 
 def has_data_name(username, dataname):
-    data_name_list = db.session.query(distinct(DataTableModel)).filter(DataTableModel.username == username,
+    data_name_list = db.session.query(DataTableModel).filter(DataTableModel.username == username,
                                                                        DataTableModel.dataname == dataname).all()
     if len(data_name_list) > 0:
         return True
