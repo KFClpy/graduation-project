@@ -68,8 +68,8 @@ class UserLogin(Resource, BaseView):
 class TokenRefresh(Resource, BaseView):
     def post(self):
         refresh_token = tokenParser.parse_args()['refreshToken']
-        current_user = decode_token(refresh_token)['sub']
-        expire_time=decode_token(refresh_token)['exp']
+        current_user = decode_token(refresh_token,allow_expired=True)['sub']
+        expire_time=decode_token(refresh_token,allow_expired=True)['exp']
         if int(time())<=expire_time:
             access_token = create_access_token(identity=current_user)
             data = {'token': access_token, 'refresh_token': refresh_token}

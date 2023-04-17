@@ -23,9 +23,9 @@ data_file_parser = reqparse.RequestParser()
 data_file_parser.add_argument('data_name', help='数据集名称不能为空', required=True, location='form')
 data_file_parser.add_argument('data_file', type=FileStorage, location='files')
 join_parser = reqparse.RequestParser()
-join_parser.add_argument('left_data_name', help='左侧数据集名称不能为空', required=True)
-join_parser.add_argument('right_data_name', help='右侧数据集名称不能为空', required=True)
-join_parser.add_argument('data_name', help='生成数据集名称不能为空', required=True)
+join_parser.add_argument('data_name_left', help='左侧数据集名称不能为空', required=True)
+join_parser.add_argument('data_name_right', help='右侧数据集名称不能为空', required=True)
+join_parser.add_argument('data_name_generate', help='生成数据集名称不能为空', required=True)
 data_name_parser = reqparse.RequestParser()
 data_name_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
 
@@ -59,9 +59,9 @@ class JoinFile(Resource, BaseView):
     @jwt_required()
     def post(self):
         data = join_parser.parse_args()
-        left_name = data['left_data_name']
-        right_name = data['right_data_name']
-        data_name = data['data_name']
+        left_name = data['data_name_left']
+        right_name = data['data_name_right']
+        data_name = data['data_name_generate']
         user_name = get_jwt_identity()
         try:
             left = get_data_from_db(username=user_name, dataname=left_name)
@@ -71,7 +71,10 @@ class JoinFile(Resource, BaseView):
             autofj = AutoFJ(verbose=True)
             result = autofj.join(df_left, df_right, id_column="id")
             df_to_db(result, username=user_name, dataname=data_name)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            data = {
+                "username": user_name
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except Exception as e:
             base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
