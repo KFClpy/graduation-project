@@ -91,7 +91,9 @@ def get_data_from_db(username, dataname):
     attributes = ['attribute%s' % i for i in range(1, 16)]
     for mapping in mappings:
         db_dict[mapping.th_name] = []
+    db_dict['tid']=[]
     for row in rows:
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
+        db_dict['tid'].append(row.tid)
     return db_dict
