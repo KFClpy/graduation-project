@@ -91,7 +91,29 @@ def get_data_from_db(username, dataname):
     attributes = ['attribute%s' % i for i in range(1, 16)]
     for mapping in mappings:
         db_dict[mapping.th_name] = []
-    db_dict['tid']=[]
+    for row in rows:
+        for mapping in mappings:
+            db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
+    return db_dict
+
+
+def get_data_from_db_with_tid(username, dataname):
+    try:
+        rows = db.session.query(DataTableModel).filter(DataTableModel.username == username,
+                                                       DataTableModel.dataname == dataname). \
+            order_by(DataTableModel.attribute1).all()
+    except Exception as e:
+        raise e
+    try:
+        mappings = db.session.query(DataMappingModel).filter(DataMappingModel.username == username,
+                                                             DataMappingModel.dataname == dataname).all()
+    except Exception as e:
+        raise e
+    db_dict = {}
+    attributes = ['attribute%s' % i for i in range(1, 16)]
+    for mapping in mappings:
+        db_dict[mapping.th_name] = []
+    db_dict['tid'] = []
     for row in rows:
         for mapping in mappings:
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
