@@ -16,7 +16,16 @@ def get_data_name(username):
 
 def has_data_name(username, dataname):
     data_name_list = db.session.query(DataTableModel).filter(DataTableModel.username == username,
-                                                                       DataTableModel.dataname == dataname).all()
+                                                             DataTableModel.dataname == dataname).all()
     if len(data_name_list) > 0:
         return True
     return False
+
+
+def delete_one_data(tid):
+    try:
+        db.session.query(DataTableModel).filter(DataTableModel.tid == tid).delete()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
