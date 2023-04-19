@@ -1,19 +1,31 @@
-import os
-from time import time
-
 import pandas as pd
-from flask_jwt_extended import decode_token
-from werkzeug.security import check_password_hash, generate_password_hash
+from pandas import DataFrame
 
-from auto_fuzzy_join.autofj import AutoFJ
-from auto_fuzzy_join.datasets import load_data
-from mysqldb.exts import db
-from mysqldb.models import DataTableModel, DataMappingModel
+import manual_fuzzy_join
+from app_config import Path
+from manual_fuzzy_join.join_funcion.distance_function import DistanceFunction
+from manual_fuzzy_join.join_funcion.preprocessor import Preprocessor
+from manual_fuzzy_join.join_funcion.tokenizer import Tokenizer
+from manual_fuzzy_join.manual_join import manualJoin
 from run import app
-from app_config import Config
-from service.dataService import get_data_name
-from service.fileService import get_data_from_db
-from service.userService import getuser, updatepassword
 
 with app.app_context():
-    print(get_data_name("admin"))
+    # preprocessor = Preprocessor("lowerRemovePunctuationStem")
+    # tokenizer = Tokenizer("threeGram")
+    # distanceFunction = DistanceFunction("jaccardDistance")
+    # df = pd.read_csv(Path.CSV_PATH + "/data_generate.csv")
+    # column_pre_left = preprocessor.preprocess(df['title_l'])
+    # column_pre_right = preprocessor.preprocess(df['title_r'])
+    # column_token_left = tokenizer.tokenize(column_pre_left)
+    # column_token_right = tokenizer.tokenize(column_pre_right)
+    # df=DataFrame()
+    # df['value_r']=column_token_right
+    # df['value_l']=column_token_left
+    # distance = distanceFunction.compute_distance(df)
+    # print(distance)
+    data = {
+        "preprocessor": " ",
+        "tokenizer": " ",
+        "distance_function": []
+    }
+    manualJoin(DataFrame(),DataFrame(),config=data)
