@@ -37,6 +37,6 @@ def child_join(left_title, series_right, threshold, distance_function,right_id):
     df['value_r'] = series_right
     distance_series = distanceFunction.compute_distance(df)
     minId=right_id[distance_series.idxmin()]
-    if(distance_series.min()>threshold)
+    if distance_series.min()>threshold:
         minId=None
-    return distance_series.min()>threshold
+    return minId
