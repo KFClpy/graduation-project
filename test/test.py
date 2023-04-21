@@ -8,7 +8,7 @@ from manual_fuzzy_join.join_funcion.preprocessor import Preprocessor
 from manual_fuzzy_join.join_funcion.tokenizer import Tokenizer
 from manual_fuzzy_join.manual_join import manualJoin
 from run import app
-from service.dataSetService import get_dataSet_info
+from service.dataSetService import get_dataset_info
 
 with app.app_context():
     # df_left=pd.read_csv("F:/AutomaticFuzzyJoin-master/src/autofj/benchmark/TennisTournament/left.csv")
@@ -24,5 +24,5 @@ with app.app_context():
     # for key,value in manualJoin(df_left,df_right,config=data).items():
     #     if value:
     #         print(key,value)
-    print(get_dataSet_info("admin123"))
+    print(get_dataset_info("admin123"))
 

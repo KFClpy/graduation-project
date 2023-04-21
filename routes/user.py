@@ -23,6 +23,16 @@ user_route = [
                     "requiresAuth": True,
                     "icon": 'icon-park-outline:workbench'
                 }
+            },
+            {
+                "name": 'dashboard_datainfo',
+                "path": '/dashboard/datainfo',
+                "component": 'self',
+                "meta": {
+                    "title": '数据集编辑',
+                    "requiresAuth": True,
+                    "icon": 'mdi:chart-areaspline'
+                }
             }
         ],
         "meta": {
@@ -48,8 +58,8 @@ user_route = [
                 }
             },
             {
-                "name": 'component_button',
-                "path": '/"component"/button',
+                "name": 'document_manual',
+                "path": '/document/manual',
                 "component": 'self',
                 "meta": {
                     "title": '手动模糊连接',

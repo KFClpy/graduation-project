@@ -4,7 +4,7 @@ from mysqldb.exts import db
 from mysqldb.models import DataMappingModel, DataTableModel
 
 
-def get_dataSet_info(username):
+def get_dataset_info(username):
     dataname_mappings = db.session.query(DataMappingModel.dataname, func.count(DataMappingModel.th_name)).filter(
         DataMappingModel.username == username).group_by(DataMappingModel.dataname).all()
     dataname_count = db.session.query(DataTableModel.dataname, func.count(DataTableModel.tid)). \

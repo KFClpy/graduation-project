@@ -3,7 +3,7 @@ from flask_restful import Resource
 
 from base.baseview import BaseView
 from base.status_code import Codes
-from service.dataSetService import get_dataSet_info
+from service.dataSetService import get_dataset_info
 from utils.logger import base_log
 
 
@@ -12,7 +12,7 @@ class GetDataInfo(Resource,BaseView):
     def post(self):
         user_name=get_jwt_identity()
         try:
-            back_data=get_dataSet_info(user_name)
+            back_data= get_dataset_info(user_name)
             return self.formattingData(Codes.SUCCESS.code,Codes.SUCCESS.desc,data=back_data)
         except Exception as e:
             base_log.info(e)
