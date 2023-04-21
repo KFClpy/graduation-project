@@ -5,7 +5,7 @@ from flask_restful import Api
 from app import create_app
 from errors import errors
 from mysqldb.exts import db
-from resource import userController, fileController, dataController
+from resource import userController, fileController, dataController, dataSetController
 from service import tokenService
 from flask_cors import CORS
 
@@ -30,6 +30,7 @@ api.add_resource(dataController.GetDataName,"/getDataName")
 api.add_resource(dataController.GetDataTable,'/getDataTable')
 api.add_resource(dataController.DeleteOneData,'/deleteOneData')
 api.add_resource(dataController.EditOneData,'/editOneData')
+api.add_resource(dataSetController.GetDataInfo,'/getDataInfo')
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
