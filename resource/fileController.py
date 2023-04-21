@@ -15,7 +15,7 @@ from auto_fuzzy_join.datasets import load_data
 from base.baseview import BaseView
 from app_config import Path
 from base.status_code import Codes
-from service.fileService import file_to_data, get_data_from_db, df_to_db
+from service.fileService import file_to_data, get_data_from_db, df_to_db, check_legal
 from utils.filefilter import is_csv
 from utils.logger import base_log
 
@@ -68,6 +68,7 @@ class JoinFile(Resource, BaseView):
             right = get_data_from_db(username=user_name, dataname=right_name)
             df_left = DataFrame(left)
             df_right = DataFrame(right)
+            check_legal(df_left,df_right,user_name,data_name)
             autofj = AutoFJ(verbose=True)
             result = autofj.join(df_left, df_right, id_column="id")
             df_to_db(result, username=user_name, dataname=data_name)

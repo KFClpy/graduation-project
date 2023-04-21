@@ -24,11 +24,6 @@ def file_to_data(filepath, username, dataname):
             setattr(mapping, 'th_id', index)
             setattr(mapping, 'th_name', value)
             db.session.add(mapping)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        raise e
-    try:
         for index, row in df.iterrows():
             data = DataTableModel()
             for i in range(row.size):
@@ -46,10 +41,6 @@ def df_to_db(df, username, dataname):
     attributes = ['attribute%s' % i for i in range(1, 16)]
     try:
         th_list = df.columns.tolist()
-        if len(th_list) > 15:
-            raise ColumnOutOfMax("列数超出限制")
-        if has_data_name(username, dataname):
-            raise DataSetAlreadyExist("数据集已存在")
         for index, value in enumerate(th_list):
             mapping = DataMappingModel()
             mapping.username = username
@@ -57,11 +48,6 @@ def df_to_db(df, username, dataname):
             setattr(mapping, 'th_id', index)
             setattr(mapping, 'th_name', value)
             db.session.add(mapping)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        raise e
-    try:
         for index, row in df.iterrows():
             data = DataTableModel()
             for i in range(row.size):
@@ -73,6 +59,7 @@ def df_to_db(df, username, dataname):
     except Exception as e:
         db.session.rollback()
         raise e
+
 
 
 def get_data_from_db(username, dataname):
@@ -119,3 +106,12 @@ def get_data_from_db_with_tid(username, dataname):
             db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
         db_dict['tid'].append(row.tid)
     return db_dict
+
+
+def check_legal(df_left,df_right,username,dataname):
+    th_list_left = df_left.columns.tolist()
+    th_list_right=df_right.columns.tolist()
+    if len(th_list_left)+ len(th_list_right) > 15:
+        raise ColumnOutOfMax("列数超出限制")
+    if has_data_name(username, dataname):
+        raise DataSetAlreadyExist("数据集已存在")
