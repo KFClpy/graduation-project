@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from exception.DuplicateUserException import DuplicateUser
 from exception.NoUserException import NoUser
 from exception.WrongPasswordException import WrongPassword
@@ -14,7 +16,7 @@ def login_user(user):
         raise NoUser("该用户不存在")
     if not users[0].check_password(user.tpassword):
         raise WrongPassword("密码错误")
-    access_token = create_access_token(user.tusername)
+    access_token = create_access_token(user.tusername,expires_delta=timedelta(minutes=30))
     refresh_token = create_refresh_token(user.tusername)
     return {
         'token': access_token,
