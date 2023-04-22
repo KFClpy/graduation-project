@@ -32,3 +32,24 @@ def delete_dataset_info(username, dataname):
     except Exception as e:
         db.session.rollback()
         raise e
+
+
+def delete_column(username, dataname, columnname):
+    try:
+        count = db.session.query(func.count(DataMappingModel.th_id)). \
+            filter(DataMappingModel.username == username, DataMappingModel.dataname == dataname).first()[0]
+        if count > 1:
+            db.session.query(DataMappingModel).filter(DataMappingModel.username == username,
+                                                      DataMappingModel.dataname == dataname,
+                                                      DataMappingModel.th_name == columnname).delete()
+        else :
+            if db.session.query(DataMappingModel.th_name).filter(DataMappingModel.dataname==dataname,
+                                                                 DataMappingModel.username==username).first()[0]==columnname:
+                db.session.query(DataTableModel).filter(DataTableModel.dataname == dataname,
+                                                        DataTableModel.username == username).delete()
+                db.session.query(DataMappingModel).filter(DataMappingModel.dataname == dataname,
+                                                          DataMappingModel.username == username).delete()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
