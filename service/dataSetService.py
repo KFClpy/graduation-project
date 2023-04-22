@@ -64,3 +64,15 @@ def get_column_info(username, dataname):
         now = {"column_id": data.th_id, "column_name": data.th_name}
         result.append(now)
     return result
+
+
+def edit_column(username, dataname, columnid, newcolumnname):
+    try:
+        data = db.session.query(DataMappingModel).filter(DataMappingModel.username == username,
+                                                         DataMappingModel.dataname == dataname,
+                                                         DataMappingModel.th_id == columnid).first()
+        data.th_name = newcolumnname
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
