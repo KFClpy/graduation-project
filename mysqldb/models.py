@@ -68,3 +68,21 @@ class DataMappingModel(db.Model):
     dataname = db.Column(db.String(50), primary_key=True)
     th_id = db.Column(db.Integer, primary_key=True)
     th_name = db.Column(db.String(100))
+
+
+class PreprocessorModel(db.Model):
+    __tablename__ = 'preprocessor_config'
+    id = db.Column(db.Integer, primary_key=True)
+    preprocessor = db.Column(db.String(50), primary_key=True)
+
+
+class TokenizerModel(db.Model):
+    __tablename__ = 'tokenizer_config'
+    id = db.Column(db.Integer, primary_key=True)
+    tokenizer = db.Column(db.String(50), primary_key=True)
+
+
+class DistanceFunctionModel(db.Model):
+    __tablename__ = 'distance_function_config'
+    id = db.Column(db.Integer, primary_key=True)
+    distance_function = db.Column(db.String(50), primary_key=True)
