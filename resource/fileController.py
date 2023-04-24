@@ -1,4 +1,5 @@
 import io
+import json
 import os
 
 from flask import make_response, send_file
@@ -16,6 +17,7 @@ from base.baseview import BaseView
 from app_config import Path
 from base.status_code import Codes
 from service.fileService import file_to_data, get_data_from_db, df_to_db, check_legal
+from service.joinService import manual_join_df
 from utils.filefilter import is_csv
 from utils.logger import base_log
 
@@ -28,6 +30,11 @@ join_parser.add_argument('data_name_right', help='右侧数据集名称不能为
 join_parser.add_argument('data_name_generate', help='生成数据集名称不能为空', required=True)
 data_name_parser = reqparse.RequestParser()
 data_name_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
+manual_join_parser = reqparse.RequestParser()
+manual_join_parser.add_argument('data_name_left', help='左侧数据集名称不能为空', required=True)
+manual_join_parser.add_argument('data_name_right', help='右侧数据集名称不能为空', required=True)
+manual_join_parser.add_argument('data_name_generate', help='生成数据集名称不能为空', required=True)
+manual_join_parser.add_argument('config', help='配置不能为空', required=True,action='store')
 
 
 class UploadFile(Resource, BaseView):
@@ -68,7 +75,7 @@ class JoinFile(Resource, BaseView):
             right = get_data_from_db(username=user_name, dataname=right_name)
             df_left = DataFrame(left)
             df_right = DataFrame(right)
-            check_legal(df_left,df_right,user_name,data_name)
+            check_legal(df_left, df_right, user_name, data_name)
             autofj = AutoFJ(verbose=True)
             result = autofj.join(df_left, df_right, id_column="id")
             df_to_db(result, username=user_name, dataname=data_name)
@@ -91,3 +98,15 @@ class DownloadFile(Resource, BaseView):
         path = os.path.join(Path.CSV_PATH, secure_filename(dataname + ".csv"))
         df.to_csv(path, index=False)
         return send_file(path)
+
+
+class ManualJoinFile(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        data = manual_join_parser.parse_args()
+        user_name = get_jwt_identity()
+        data_name_left = data['data_name_left']
+        data_name_right = data['data_name_right']
+        data_name_generate = data['data_name_generate']
+        config = json.loads(data['config'])
+        return str(manual_join_df(user_name, data_name_left, data_name_right, data_name_generate, config))
