@@ -29,7 +29,7 @@ user_route = [
                 "path": '/dashboard/datainfo',
                 "component": 'self',
                 "meta": {
-                    "title": '数据集编辑',
+                    "title": '数据集管理',
                     "requiresAuth": True,
                     "icon": 'mdi:chart-areaspline'
                 }

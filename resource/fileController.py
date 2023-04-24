@@ -109,4 +109,12 @@ class ManualJoinFile(Resource, BaseView):
         data_name_right = data['data_name_right']
         data_name_generate = data['data_name_generate']
         config = json.loads(data['config'])
-        return str(manual_join_df(user_name, data_name_left, data_name_right, data_name_generate, config))
+        try:
+            manual_join_df(user_name, data_name_left, data_name_right, data_name_generate, config)
+            back_data={
+                "username":user_name
+            }
+            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=back_data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)

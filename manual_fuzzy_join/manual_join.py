@@ -1,3 +1,4 @@
+import pandas as pd
 from pandas import DataFrame
 
 from manual_fuzzy_join.join_funcion.distance_function import DistanceFunction
@@ -17,8 +18,6 @@ def manualJoin(data_left, data_right, config):
     left_id = data_left['id']
     right_id = data_right['id']
     left_result = {}
-    for index,value in left_id.items():
-        left_result[value] = []
     distance_functions = config['distance_function']
     for key, value in distance_functions.items():
         threshold = value
@@ -28,8 +27,16 @@ def manualJoin(data_left, data_right, config):
             index_id = left_id[i]
             if result_id is None:
                 continue
-            left_result[index_id].append(result_id)
-    return left_result
+            if left_result.__contains__(index_id):
+                left_result[index_id].append(result_id)
+            else:
+                left_result[index_id] = []
+                left_result[index_id].append(result_id)
+    for key,value in left_result.items():
+        data_left.loc[data_left['id']==key,'jid']=int(value[0])
+    df_result=pd.merge(data_left,data_right,left_on='jid',right_on='id',suffixes=('_l','_r'))
+    df_result.drop('jid',inplace=True,axis=1)
+    return df_result
 
 
 def child_join(left_title, series_right, threshold, distance_function, right_id):
