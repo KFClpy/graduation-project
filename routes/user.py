@@ -75,28 +75,6 @@ user_route = [
         }
     },
     {
-        "name": 'auth-demo',
-        "path": '/auth-demo',
-        "component": 'basic',
-        "children": [
-            {
-                "name": 'auth-demo_permission',
-                "path": '/auth-demo/permission',
-                "component": 'self',
-                "meta": {
-                    "title": '权限切换',
-                    "requiresAuth": True,
-                    "icon": 'ic:round-construction'
-                }
-            }
-        ],
-        "meta": {
-            "title": '权限示例',
-            "icon": 'ic:baseline-security',
-            "order": 5
-        }
-    },
-    {
         "name": 'multi-menu',
         "path": '/multi-menu',
         "component": 'basic',
