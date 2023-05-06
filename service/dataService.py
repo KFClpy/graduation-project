@@ -59,8 +59,8 @@ def edit_one_data(tid, data):
 
 def add_one_data(data, data_name, user_name):
     data_row = DataTableModel()
-    data_row.username=user_name
-    data_row.dataname=data_name
+    data_row.username = user_name
+    data_row.dataname = data_name
     try:
         mappings = db.session.query(DataMappingModel).filter(DataMappingModel.username == user_name,
                                                              DataMappingModel.dataname == data_name).all()
@@ -78,3 +78,29 @@ def add_one_data(data, data_name, user_name):
     except Exception as e:
         db.session.rollback()
         raise e
+
+
+def searchSomeData(user_name, data_type, data_name, data_value):
+    try:
+        mappings = db.session.query(DataMappingModel).filter(DataMappingModel.username == user_name,
+                                                             DataMappingModel.dataname == data_name).all()
+        attributes = ['attribute%s' % i for i in range(1, 16)]
+        dict_map = {}
+        for mapping in mappings:
+            dict_map[mapping.th_name] = mapping.th_id
+        search_type = attributes[dict_map[data_type]]
+        data_rows = db.session.query(DataTableModel).filter(DataTableModel.username == user_name,
+                                                            DataTableModel.dataname == data_name,
+                                                            getattr(DataTableModel, search_type) == data_value)
+    except Exception as e:
+        raise e
+    db_dict = {}
+    attributes = ['attribute%s' % i for i in range(1, 16)]
+    for mapping in mappings:
+        db_dict[mapping.th_name] = []
+    db_dict['tid'] = []
+    for row in data_rows:
+        for mapping in mappings:
+            db_dict[mapping.th_name].append(getattr(row, attributes[mapping.th_id]))
+        db_dict['tid'].append(row.tid)
+    return db_dict

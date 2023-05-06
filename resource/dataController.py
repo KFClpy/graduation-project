@@ -5,7 +5,7 @@ from flask_restful import Resource, reqparse
 
 from base.baseview import BaseView
 from base.status_code import Codes
-from service.dataService import get_data_name, delete_one_data, edit_one_data, add_one_data
+from service.dataService import get_data_name, delete_one_data, edit_one_data, add_one_data, searchSomeData
 from service.fileService import get_data_from_db, get_data_from_db_with_tid
 from utils.logger import base_log
 
@@ -18,8 +18,11 @@ data_edit_parser.add_argument('tid', help='数据tid不能为空', required=True
 data_edit_parser.add_argument('data', help='数据本体不能为空', required=True)
 data_add_parser = reqparse.RequestParser()
 data_add_parser.add_argument('data', help='数据本体不能为空', required=True)
-data_add_parser.add_argument('data_name', help='数据名称不能为空', required=True)
-
+data_add_parser.add_argument('data_name', help='数据集名称不能为空', required=True)
+data_search_parser=reqparse.RequestParser()
+data_search_parser.add_argument('data_type',help='数据类型不能为空',required=True)
+data_search_parser.add_argument('data_value',help='数据值不能为空',required=True)
+data_search_parser.add_argument('data_name',help='数据集名称不能为空',required=True)
 
 class GetDataName(Resource, BaseView):
     @jwt_required()
@@ -96,3 +99,21 @@ class AddOneData(Resource, BaseView):
         except Exception as e:
             base_log.info(e)
             return self.formattingData(Codes.FAILE.code, Codes.FAILE.desc, data=None)
+
+
+class SearchSomeData(Resource,BaseView):
+    @jwt_required()
+    def post(self):
+        user_name=get_jwt_identity()
+        try:
+            data_type=data_search_parser.parse_args()['data_type']
+            data_value=data_search_parser.parse_args()['data_value']
+            data_name=data_search_parser.parse_args()['data_name']
+            data=searchSomeData(data_name=data_name,data_value=data_value,data_type=data_type,user_name=user_name)
+            back_data={
+                "data":data
+            }
+            return self.formattingData(Codes.SUCCESS.code, Codes.SUCCESS.desc, data=back_data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(Codes.FAILE.code,Codes.FAILE.desc,data=None)
