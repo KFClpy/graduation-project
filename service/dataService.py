@@ -58,16 +58,19 @@ def edit_one_data(tid, data):
 
 
 def add_one_data(data, data_name, user_name):
+    attributes = ['attribute%s' % i for i in range(1, 16)]
     data_row = DataTableModel()
     data_row.username = user_name
     data_row.dataname = data_name
+    for attribute in attributes:
+        setattr(data_row,attribute,"")
+    data_row.attribute1 = 0
     try:
         mappings = db.session.query(DataMappingModel).filter(DataMappingModel.username == user_name,
                                                              DataMappingModel.dataname == data_name).all()
     except Exception as e:
         raise e
     try:
-        attributes = ['attribute%s' % i for i in range(1, 16)]
         for mapping in mappings:
             if type(getattr(data_row, attributes[mapping.th_id])) == type(data[mapping.th_name]):
                 setattr(data_row, attributes[mapping.th_id], data[mapping.th_name])
