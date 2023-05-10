@@ -67,6 +67,16 @@ user_route = [
                     "icon": 'mdi:button-cursor'
                 }
             },
+            {
+                "name":"document_quality",
+                "path":"/document/quality",
+                "component":"self",
+                "meta": {
+                    "title": '连接质量评测',
+                    "requiresAuth": True,
+                    "icon": 'mdi:calculator'
+                }
+            }
         ],
         "meta": {
             "title": '模糊连接',

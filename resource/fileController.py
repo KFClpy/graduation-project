@@ -13,6 +13,7 @@ import pandas as pd
 
 from auto_fuzzy_join.autofj import AutoFJ
 from auto_fuzzy_join.datasets import load_data
+from auto_fuzzy_join.evaluate import evaluate
 from base.baseview import BaseView
 from app_config import Path
 from base.status_code import Codes
@@ -34,7 +35,10 @@ manual_join_parser = reqparse.RequestParser()
 manual_join_parser.add_argument('data_name_left', help='左侧数据集名称不能为空', required=True)
 manual_join_parser.add_argument('data_name_right', help='右侧数据集名称不能为空', required=True)
 manual_join_parser.add_argument('data_name_generate', help='生成数据集名称不能为空', required=True)
-manual_join_parser.add_argument('config', help='配置不能为空', required=True,action='store')
+manual_join_parser.add_argument('config', help='配置不能为空', required=True, action='store')
+join_quality_parser = reqparse.RequestParser()
+join_quality_parser.add_argument('data_generate_name', help="合成数据集名称不能为空", required=True)
+join_quality_parser.add_argument('data_ground_truth', help="真实数据集名称不能为空", required=True)
 
 
 class UploadFile(Resource, BaseView):
@@ -111,10 +115,34 @@ class ManualJoinFile(Resource, BaseView):
         config = json.loads(data['config'])
         try:
             manual_join_df(user_name, data_name_left, data_name_right, data_name_generate, config)
-            back_data={
-                "username":user_name
+            back_data = {
+                "username": user_name
             }
-            return self.formattingData(code=Codes.SUCCESS.code,msg=Codes.SUCCESS.desc,data=back_data)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=back_data)
         except Exception as e:
             base_log.info(e)
-            return self.formattingData(code=Codes.FAILE.code,msg=Codes.FAILE.desc,data=None)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
+
+class JoinQualityEvaluate(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        user_name = get_jwt_identity()
+        data_generate_name = join_quality_parser.parse_args()['data_generate_name']
+        data_ground_truth = join_quality_parser.parse_args()['data_ground_truth']
+        try:
+            gt = DataFrame(get_data_from_db(user_name, data_ground_truth))
+            LR_joins = DataFrame(get_data_from_db(user_name, data_generate_name))
+            gt_joins = gt[["id_l", "id_r"]].values
+            LR_joins = LR_joins[["id_l", "id_r"]].values
+            p, r, f1 = evaluate(LR_joins, gt_joins)
+            data = {
+                "username":user_name,
+                "precision": p,
+                "recall": r,
+                "f1": f1
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
