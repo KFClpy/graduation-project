@@ -1,5 +1,6 @@
 from sqlalchemy import distinct, func
 
+from exception.ColumnOutOfMaxException import ColumnOutOfMax
 from mysqldb.exts import db
 from mysqldb.models import DataMappingModel, DataTableModel
 
@@ -72,6 +73,32 @@ def edit_column(username, dataname, columnid, newcolumnname):
                                                          DataMappingModel.dataname == dataname,
                                                          DataMappingModel.th_id == columnid).first()
         data.th_name = newcolumnname
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+
+def add_column(user_name, data_name, column_name, default_value):
+    try:
+        top_id = db.session.query(func.max(DataMappingModel.th_id)).filter(DataMappingModel.username == user_name,
+                                                                           DataMappingModel.dataname == data_name).first()[
+            0]
+        now_id = top_id + 1
+        if now_id > 14:
+            raise ColumnOutOfMax("列数超出限制")
+        new_map = DataMappingModel()
+        new_map.dataname = data_name
+        new_map.username = user_name
+        new_map.th_id = now_id
+        new_map.th_name = column_name
+        db.session.add(new_map)
+        attributes = ['attribute%s' % i for i in range(1, 16)]
+        now_column = attributes[now_id]
+        rows = db.session.query(DataTableModel).filter(DataTableModel.dataname == data_name,
+                                                       DataTableModel.username == user_name).all()
+        for row in rows:
+            setattr(row, now_column, default_value)
         db.session.commit()
     except Exception as e:
         db.session.rollback()
