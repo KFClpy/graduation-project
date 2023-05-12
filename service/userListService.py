@@ -32,11 +32,22 @@ def get_user_list(user_name):
 
 def delete_user(user_name):
     try:
-        db.session.query(User).filter(User.tusername==user_name).delete()
-        db.session.query(DataTableModel).filter(DataTableModel.username==user_name).delete()
-        db.session.query(DataMappingModel).filter(DataMappingModel.username==user_name).delete()
+        db.session.query(User).filter(User.tusername == user_name).delete()
+        db.session.query(DataTableModel).filter(DataTableModel.username == user_name).delete()
+        db.session.query(DataMappingModel).filter(DataMappingModel.username == user_name).delete()
         db.session.commit()
     except Exception as e:
         db.session.rollback()
         raise e
 
+
+def edit_user(user_name, gender, phone, email):
+    try:
+        user = db.session.query(User).filter(User.tusername == user_name).first()
+        user.gender = gender
+        user.phone = phone
+        user.email = email
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e

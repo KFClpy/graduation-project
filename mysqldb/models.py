@@ -7,7 +7,7 @@ class User(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
     tusername = db.Column(db.String(20), unique=True, nullable=False)
     tpassword = db.Column(db.String(150), unique=True, nullable=False)
-    gender = db.Column(db.Integer)
+    gender = db.Column(db.String(5))
     phone = db.Column(db.String(20))
     email = db.Column(db.String(50))
     avatar = db.Column(db.String(255))
