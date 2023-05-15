@@ -47,6 +47,7 @@ api.add_resource(configController.GetDistanceFunction, '/getDistanceFunction')
 api.add_resource(userListController.GetUserList, '/getUserList')
 api.add_resource(userListController.DeleteUser, '/deleteUser')
 api.add_resource(userListController.EditUser,'/editUser')
+api.add_resource(userListController.DeleteUsers,'/deleteUsers')
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -60,4 +61,4 @@ def check_if_token_in_blacklist(jwt_header, decrypted_token):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
