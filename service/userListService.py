@@ -51,3 +51,18 @@ def edit_user(user_name, gender, phone, email):
     except Exception as e:
         db.session.rollback()
         raise e
+
+
+def search_user(user_name, my_name):
+    try:
+        user = db.session.query(User).filter(User.tusername == user_name).first()
+        my = db.session.query(User).filter(User.tusername == my_name).first()
+        if user and roleMapping[my.role]>roleMapping[user.role]:
+            return [{"index": 1, "userName": user.tusername, "gender": user.gender,
+                     "phone": user.phone,
+                     "email": user.email,
+                     "role": user.role}]
+        else:
+            return []
+    except Exception as e:
+        raise e
