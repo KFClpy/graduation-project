@@ -16,7 +16,7 @@ def login_user(user):
         raise NoUser("该用户不存在")
     if not users[0].check_password(user.tpassword):
         raise WrongPassword("密码错误")
-    access_token = create_access_token(user.tusername,expires_delta=timedelta(minutes=30))
+    access_token = create_access_token(user.tusername, expires_delta=timedelta(minutes=30))
     refresh_token = create_refresh_token(user.tusername)
     return {
         'token': access_token,
@@ -53,10 +53,10 @@ def getuser(username):
 def updateuser(newuser):
     try:
         user = getuser(newuser.tusername)
-        user.avatar = newuser.avatar
+        # user.avatar = newuser.avatar
         user.email = newuser.email
         user.gender = newuser.gender
-        user.nickname = newuser.nickname
+        # user.nickname = newuser.nickname
         user.phone = newuser.phone
         db.session.commit()
     except Exception as e:
@@ -73,4 +73,15 @@ def updatepassword(newpassword, oldpassword, username):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
+        raise e
+
+
+def get_self(user_name):
+    try:
+        user = db.session.query(User).filter(User.tusername == user_name).first()
+        return {"index": 1, "userName": user.tusername, "gender": user.gender,
+                "phone": user.phone,
+                "email": user.email,
+                "role": user.role}
+    except Exception as e:
         raise e

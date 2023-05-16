@@ -9,18 +9,15 @@ from base.status_code import Codes
 from mysqldb.models import User
 from routes import routes
 from routes.home import home_route
-from service.userService import login_user, register_user, logout, getuser, updatepassword, updateuser
+from service.userListService import search_user
+from service.userService import login_user, register_user, logout, getuser, updatepassword, updateuser, get_self
 from utils.logger import base_log
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help='用户名不能为空', required=True)
 parser.add_argument('password', help='密码不能为空', required=True)
 userParser = reqparse.RequestParser()
-userParser.add_argument('gender', help='性别不能为空', required=True)
-userParser.add_argument('phone', help='电话不能为空', required=True)
-userParser.add_argument('email', help='邮件地址不能为空', required=True)
-userParser.add_argument('nickname', help='昵称不能为空', required=True)
-userParser.add_argument('avatar')
+userParser.add_argument('userInfo', help='用户不能为空', required=True)
 passwordParser = reqparse.RequestParser()
 passwordParser.add_argument('oldpassword', help='旧密码不能为空', required=True)
 passwordParser.add_argument('newpassword', help='新密码不能为空', required=True)
@@ -69,10 +66,10 @@ class UserLogin(Resource, BaseView):
 class TokenRefresh(Resource, BaseView):
     def post(self):
         refresh_token = tokenParser.parse_args()['refreshToken']
-        current_user = decode_token(refresh_token,allow_expired=True)['sub']
-        expire_time=decode_token(refresh_token,allow_expired=True)['exp']
-        if int(time())<=expire_time:
-            access_token = create_access_token(identity=current_user,expires_delta=timedelta(minutes=30))
+        current_user = decode_token(refresh_token, allow_expired=True)['sub']
+        expire_time = decode_token(refresh_token, allow_expired=True)['exp']
+        if int(time()) <= expire_time:
+            access_token = create_access_token(identity=current_user, expires_delta=timedelta(minutes=30))
             data = {'token': access_token, 'refreshToken': refresh_token}
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         else:
@@ -95,13 +92,17 @@ class ChangePassword(Resource, BaseView):
 class ChangeUserInfo(Resource, BaseView):
     @jwt_required()
     def post(self):
-        userinfo = userParser.parse_args()
+        user_name = get_jwt_identity()
+        userinfo = eval(userParser.parse_args()['userInfo'])
         current_user = get_jwt_identity()
-        newuser = User(tusername=current_user, avatar=userinfo['avatar'], email=userinfo['email'],
-                       phone=userinfo['phone'], gender=userinfo['gender'], nickname=userinfo['nickname'])
+        newuser = User(tusername=current_user, email=userinfo['email'],
+                       phone=userinfo['phone'], gender=userinfo['gender'])
         try:
             updateuser(newuser)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            data = {
+                "username": user_name
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except Exception as e:
             base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
@@ -157,6 +158,20 @@ class GetUserRoutes(Resource, BaseView):
             data = {
                 "routes": routes[user.role],
                 "home": home_route
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
+        except Exception as e:
+            base_log.info(e)
+            return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
+
+
+class GetSelfInfo(Resource, BaseView):
+    @jwt_required()
+    def post(self):
+        username = get_jwt_identity()
+        try:
+            data = {
+                "userInfo": get_self(username)
             }
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except Exception as e:
