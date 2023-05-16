@@ -68,9 +68,9 @@ user_route = [
                 }
             },
             {
-                "name":"document_quality",
-                "path":"/document/quality",
-                "component":"self",
+                "name": "document_quality",
+                "path": "/document/quality",
+                "component": "self",
                 "meta": {
                     "title": '连接质量评测',
                     "requiresAuth": True,
@@ -149,5 +149,17 @@ user_route = [
             "icon": 'fluent:book-information-24-regular',
             "order": 8
         }
-    }
+    },
+    {
+        "name": 'userinfo',
+        "path": '/userinfo',
+        "component": 'self',
+        "meta": {
+            "title": '用户信息',
+            "requiresAuth": True,
+            "icon": 'carbon:user',
+            "hide": True,
+            "singleLayout": 'basic'
+        }
+    },
 ]
