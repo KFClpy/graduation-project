@@ -6,7 +6,7 @@ from app import create_app
 from errors import errors
 from mysqldb.exts import db
 from resource import userController, fileController, dataController, dataSetController, configController, \
-    userListController
+    userListController, dbConnectController
 from service import tokenService
 from flask_cors import CORS
 
@@ -50,11 +50,11 @@ api.add_resource(userListController.DeleteUser, '/deleteUser')
 api.add_resource(userListController.EditUser,'/editUser')
 api.add_resource(userListController.DeleteUsers,'/deleteUsers')
 api.add_resource(userListController.SearchUser,'/searchUser')
+api.add_resource(dbConnectController.CheckValid,'/checkValid')
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 app.app_context().push()
-
 
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(jwt_header, decrypted_token):
