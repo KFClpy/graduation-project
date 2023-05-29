@@ -2,3 +2,4 @@
 test/
 FIles/
 base.log.*
+*.gz

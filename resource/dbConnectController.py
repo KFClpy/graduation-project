@@ -42,6 +42,7 @@ class CheckValid(Resource, BaseView):
             }
             return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except FunctionTimedOut:
+            base_log.info(FunctionTimedOut)
             data = {
                 "is_valid": False
             }
@@ -72,13 +73,10 @@ class ExecuteSQL(Resource, BaseView):
             data = {
                 "username": my_name
             }
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except FunctionTimedOut:
-            data = {
-            }
+            base_log.info(FunctionTimedOut)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
         except Exception as e:
             base_log.info(e)
-            data = {
-            }
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)

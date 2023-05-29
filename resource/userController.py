@@ -83,7 +83,10 @@ class ChangePassword(Resource, BaseView):
         current_user = get_jwt_identity()
         try:
             updatepassword(pwdinfo['newpassword'], pwdinfo['oldpassword'], current_user)
-            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=None)
+            data={
+                "username":current_user
+            }
+            return self.formattingData(code=Codes.SUCCESS.code, msg=Codes.SUCCESS.desc, data=data)
         except Exception as e:
             base_log.info(e)
             return self.formattingData(code=Codes.FAILE.code, msg=Codes.FAILE.desc, data=None)
