@@ -12,13 +12,13 @@ def get_dataset_info(username):
         DataMappingModel.username == username).group_by(DataMappingModel.dataname).all()
     data_name = {}
     for value in dataname_mappings:
-        data_name[value[0]] = []
-        data_name[value[0]].append(value[1])
+        data_name[value[0]] = {"rows":0,'columns':0}
+        data_name[value[0]]['columns']=value[1]
     for value in dataname_count:
-        data_name[value[0]].append(value[1])
+        data_name[value[0]]['rows']=(value[1])
     result = []
     for key, value in data_name.items():
-        data_now = {'data_name': key, 'columns': value[0], 'rows': value[1]}
+        data_now = {'data_name': key, 'columns': value['columns'], 'rows': value['rows']}
         result.append(data_now)
     return result
 
